@@ -10,20 +10,12 @@ def __main__():
     constraints_column = []
 
     defFullVars(vars, col_id_Sudoku)
-    print(vars)
-
-    print("\n")
 
     loadData(vars, sudoku01, col_id_Sudoku)
-    print(vars)
-
-
-    print("\n")
 
     generateConstraints(constraints_row, constraints_column, col_id_Sudoku)
-    print(constraints_row)
-    print("\n")
-    print(constraints_column)
+    
+    drawBoard(vars, col_id_Sudoku)
 
 def defFullVars(vars, cis): ## Create the boxes extructure
     for i in cis:
@@ -64,6 +56,20 @@ def generateConstraints(cr, cc, cis): ## Generate the list of posible constraint
             ListKeys.append(i+str(j))
 
         setConstraintDiff(cc, 9, ListKeys)
+
+def drawBoard(vars, cis):
+    concat = ""
+
+    for j in range(1,10):
+        for k in cis:
+            if(len(vars[k+str(j)]) == 1):
+                concat += " " + str(*vars[k+str(j)])
+            else:
+                concat += " 0"
+        
+        print(concat)
+
+        concat = ""
 
 if __name__ == "__main__":
     __main__()
