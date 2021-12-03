@@ -5,15 +5,16 @@ def __main__():
     vars = {} ## Save the data boxes 
 
     sudoku01 = "sample_data/sudoku01.txt" ## Data reference 
-    
-    constraints_row = [] ## Save row and column constraints
-    constraints_column = []
+
+    constRow = [] ## Save row, window and column constraints
+    constColumn = []
+    constWin = []
 
     defFullVars(vars, col_id_Sudoku)
 
     loadData(vars, sudoku01, col_id_Sudoku)
 
-    generateConstraints(constraints_row, constraints_column, col_id_Sudoku)
+    setAllDiffConstraints(constRow, constColumn, constWin, col_id_Sudoku)
     
     drawBoard(vars, col_id_Sudoku)
 
@@ -35,39 +36,69 @@ def loadData(vars, sdk01, cis): ## Load values form referece file
             if(cur < 10):
                 setValue(vars,str(j)+str(i),cur)
 
-def setConstraintDiff(const,arity,varList): ## Set required constraints for each posible selection
-    const.append([arity]+varList)
+def setConstraintDiff(const,arity,varList):
+  const.append([arity]+varList)
 
-def generateConstraints(cr, cc, cis): ## Generate the list of posible constraints
-    ## Rows
-    for i in range(1,10):
-        ListKeys = []
+def rowConstraints(const, cis):
+  for i in range(1,10):
+    l=[]
 
-        for j in cis:
-            ListKeys.append(j+str(i))
+    for j in cis:
+      l.append(str(j)+str(i))
 
-        setConstraintDiff(cr, 9, ListKeys) 
+    setConstraintDiff(const,9,l)
 
-    ## Columns
-    for i in cis:
-        ListKeys = []
-        
-        for j in range(1,10):
-            ListKeys.append(i+str(j))
+def colConstraints(const, cis):
+  for i in cis:
+    l=[]
 
-        setConstraintDiff(cc, 9, ListKeys)
+    for j in range(1,10):
+      l.append(str(i)+str(j))
+
+    setConstraintDiff(const,9,l)
+
+def winConstraints(const,r,c, cis):
+  winLen=3
+
+  cis=cis[(c*winLen):((c*winLen)+winLen)]
+
+  rowsIndex=list(range(((r*winLen)+1),((r*winLen)+(winLen+1))))
+
+  l=[]
+
+  for i in rowsIndex:
+    for j in cis:
+      l.append(str(j)+str(i))
+
+  setConstraintDiff(const,9,l)
+
+
+def setAllDiffConstraints(constRow, constColumn, constWin, cis):
+  rowConstraints(constRow, cis)
+
+  colConstraints(constColumn, cis)
+  
+  for i in range(3):
+    for j in range(3):
+      winConstraints(constWin,i,j, cis)
 
 def drawBoard(vars, cis):
     concat = ""
 
     for j in range(1,10):
         for k in cis:
+            if((k == 'D')| (k == 'G')):
+                concat += "  "
+
             if(len(vars[k+str(j)]) == 1):
                 concat += " " + str(*vars[k+str(j)])
             else:
                 concat += " 0"
-        
+    
         print(concat)
+
+        if((j == 3) | (j ==6)):
+            print("")
 
         concat = ""
 
