@@ -6,17 +6,28 @@ def __main__():
 
     sudoku01 = "sample_data/sudoku01.txt" ## Data reference 
 
-    constRow = [] ## Save row, window and column constraints
-    constColumn = []
-    constWin = []
+    constraints = [] ## Save row, window and column constraints
+
+    varWithValues = [] ## Save the variables that have just one value
 
     defFullVars(vars, col_id_Sudoku)
 
     loadData(vars, sudoku01, col_id_Sudoku)
 
-    setAllDiffConstraints(constRow, constColumn, constWin, col_id_Sudoku)
+    setAllDiffConstraints(constraints, col_id_Sudoku)
+
+    print(constraints)
+    print()
     
-    drawBoard(vars, col_id_Sudoku)
+    # drawBoard(vars, col_id_Sudoku)
+
+    setVarWithValues(vars, varWithValues)
+
+    print(varWithValues)
+    print()
+
+    consistency(vars, constraints, varWithValues)
+    print(constraints)
 
 def defFullVars(vars, cis): ## Create the boxes extructure
     for i in cis:
@@ -73,14 +84,30 @@ def winConstraints(const,r,c, cis):
   setConstraintDiff(const,9,l)
 
 
-def setAllDiffConstraints(constRow, constColumn, constWin, cis):
-  rowConstraints(constRow, cis)
+def setAllDiffConstraints(const, cis):
+  rowConstraints(const, cis)
 
-  colConstraints(constColumn, cis)
+  colConstraints(const, cis)
   
   for i in range(3):
     for j in range(3):
-      winConstraints(constWin,i,j, cis)
+      winConstraints(const,i,j, cis)
+
+def setVarWithValues(vars, varWithValues):
+    for k,v in vars.items():
+        if(len(v)==1):
+            varWithValues.append(k)
+
+def consistency(vars, constraints, varWithValues):
+    for i in varWithValues:
+        for j in constraints:
+            if(i in j):
+                # print("vamos a reducir de la variables asociadas en la restriccion "+str(j)+" el valor de la variable "+i+" que es "+str(list(vars[i])[0]))
+                for k in j[1:]:
+                    if(k!=i):
+                        # print("..eliminando el valor mencionado del dominio de la variable "+k+" que es "+str(vars[k]))
+                        vars[k].discard(list(vars[i])[0])
+        # print(vars)
 
 def drawBoard(vars, cis):
     concat = ""
